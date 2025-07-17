@@ -63,9 +63,13 @@ end
 ---specifically for GitHub Codespaces. If not found, it then attempts to load
 ---the token from configuration files located in the user's configuration path.
 ---@return CopilotOAuthToken
-local function get_token()
+local function get_token(self)
   if _oauth_token then
     return _oauth_token
+  end
+
+  if self.env and self.env.oauth_token then
+    return self.env.oauth_token
   end
 
   local token = os.getenv("GITHUB_TOKEN")
@@ -134,7 +138,7 @@ end
 ---@param self CodeCompanion.Adapter
 ---@return boolean success
 local function get_and_authorize_token(self)
-  _oauth_token = get_token()
+  _oauth_token = get_token(self)
   if not _oauth_token then
     log:error("Copilot Adapter: No token found. Please refer to https://github.com/github/copilot.vim")
     return false
